@@ -20,7 +20,7 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
     
     private var videoPlayerVC: AVPlayerViewController?
     private var currentVideoURL: URL?
-
+    
     
     // MARK: - UI 컴포넌트
     private let scrollView: UIScrollView = {
@@ -203,13 +203,13 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
         scoreContainerView.addSubview(scoreLabel)
         scoreContainerView.addSubview(scoreValueLabel)
         
-   
+        
     }
     
     private func setupGradient() {
         view.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
-          let gradient = BackgroundGradient.onboardingGradientLayer(frame: view.bounds)
-          view.layer.insertSublayer(gradient, at: 0)
+        let gradient = BackgroundGradient.onboardingGradientLayer(frame: view.bounds)
+        view.layer.insertSublayer(gradient, at: 0)
         
     }
     
@@ -389,53 +389,53 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
     }
     
     private func showMediaSelectionAlert() {
-          let alertController = UIAlertController(title: "미디어 선택", message: "", preferredStyle: .actionSheet)
-          
-          // 촬영하기
-          let cameraAction = UIAlertAction(title: "촬영하기", style: .default) { [weak self] _ in
-              self?.openCamera()
-          }
-          cameraAction.setValue(UIImage(systemName: "camera"), forKey: "image")
-          
-          // 갤러리에서 선택
-          let galleryAction = UIAlertAction(title: "갤러리에서 선택", style: .default) { [weak self] _ in
-              self?.openGallery()
-          }
-          galleryAction.setValue(UIImage(systemName: "photo.on.rectangle"), forKey: "image")
-          
-          // 취소
-          let cancelAction = UIAlertAction(title: "취소", style: .cancel)
-          
-          alertController.addAction(cameraAction)
-          alertController.addAction(galleryAction)
-          alertController.addAction(cancelAction)
-          
-          present(alertController, animated: true)
-      }
+        let alertController = UIAlertController(title: "미디어 선택", message: "", preferredStyle: .actionSheet)
+        
+        // 촬영하기
+        let cameraAction = UIAlertAction(title: "촬영하기", style: .default) { [weak self] _ in
+            self?.openCamera()
+        }
+        cameraAction.setValue(UIImage(systemName: "camera"), forKey: "image")
+        
+        // 갤러리에서 선택
+        let galleryAction = UIAlertAction(title: "갤러리에서 선택", style: .default) { [weak self] _ in
+            self?.openGallery()
+        }
+        galleryAction.setValue(UIImage(systemName: "photo.on.rectangle"), forKey: "image")
+        
+        // 취소
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        
+        alertController.addAction(cameraAction)
+        alertController.addAction(galleryAction)
+        alertController.addAction(cancelAction)
+        
+        present(alertController, animated: true)
+    }
     
     private func openCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
-                 print("카메라 사용 불가")
-                 return
-             }
-             let picker = UIImagePickerController()
-             picker.sourceType = .camera
-             picker.delegate = self
-             present(picker, animated: true)
-      }
-      
-      private func openGallery() {
-          guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else {
-                  print("포토 라이브러리 사용 불가")
-                  return
-              }
-              let picker = UIImagePickerController()
-              picker.sourceType = .photoLibrary
-              picker.delegate = self
-              //이미지랑 영상 둘다
-              picker.mediaTypes = ["public.image", "public.movie"]
-              present(picker, animated: true)
-      }
+            print("카메라 사용 불가")
+            return
+        }
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    private func openGallery() {
+        guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else {
+            print("포토 라이브러리 사용 불가")
+            return
+        }
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        //이미지랑 영상 둘다
+        picker.mediaTypes = ["public.image", "public.movie"]
+        present(picker, animated: true)
+    }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
@@ -461,7 +461,7 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
             playerVC.view.frame = uploadContainerView.bounds
             playerVC.showsPlaybackControls = true
             playerVC.videoGravity = .resizeAspectFill
-
+            
             // 미리보기 영역에 embed
             uploadContainerView.addSubview(playerVC.view)
             playerVC.view.snp.makeConstraints { make in
@@ -470,10 +470,20 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
             self.addChild(playerVC)
             playerVC.didMove(toParent: self)
             player.play() // 자동재생
-
+            
+            // 반복재생을 위해 Observer 등록
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(playerDidFinishPlaying(_:)),
+                name: .AVPlayerItemDidPlayToEndTime,
+                object: player.currentItem
+            )
+            
             self.videoPlayerVC = playerVC
             self.currentVideoURL = videoURL
         }
+        
+        uploadContainerView.isUserInteractionEnabled = false
         
         // 공통 UI 처리
         uploadIconImageView.isHidden = true
@@ -484,7 +494,16 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
         saveButton.isHidden = false
         resetButton.isHidden = false
     }
-
+    
+    @objc private func playerDidFinishPlaying(_ notification: Notification) {
+        if let playerItem = notification.object as? AVPlayerItem {
+            playerItem.seek(to: .zero) { [weak self] _ in
+                self?.videoPlayerVC?.player?.play()
+            }
+        }
+    }
+    
+    
     
     private func handleSaveButtonTap(){
         
@@ -493,20 +512,24 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
     private func handleResetButtonTap(){
         mediaPreviewImageView.image = nil
         mediaPreviewImageView.isHidden = true
-
+        uploadContainerView.isUserInteractionEnabled = true
+        
         // 업로드 안내 UI 다시 노출
         uploadIconImageView.isHidden = false
         uploadLabel.isHidden = false
         uploadDescriptionLabel.isHidden = false
-
+        
         // 분석 버튼, 저장/되돌리기, 결과 뷰 숨기기
         analysisButton.isHidden = true
         analysisResultView.isHidden = true
         saveButton.isHidden = true
         resetButton.isHidden = true
-
+        
         // 만약 영상 플레이어 뷰가 있다면 제거
         if let videoPlayerVC = videoPlayerVC {
+            if let currentItem = videoPlayerVC.player?.currentItem {
+                NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+            }
             videoPlayerVC.willMove(toParent: nil)
             videoPlayerVC.view.removeFromSuperview()
             videoPlayerVC.removeFromParent()
@@ -514,8 +537,8 @@ class MainViewController : UIViewController, UIImagePickerControllerDelegate & U
             self.currentVideoURL = nil
         }
     }
-
-
+    
+    
 }
 
 #Preview{
