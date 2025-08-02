@@ -1,5 +1,3 @@
-
-
 import UIKit
 import SnapKit
 import RxCocoa
@@ -13,52 +11,135 @@ class DrawingViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     
+    private var toolPicker: PKToolPicker = {
+        let toolPicker = PKToolPicker()
+        return toolPicker
+    }()
+    
     private var canvasView: PKCanvasView = {
         let view = PKCanvasView()
         view.backgroundColor = .white
         view.isOpaque = false
         view.tool = PKInkingTool(.pen, color: .black, width: 3)
         view.drawingPolicy = .anyInput // 손가락으로도 그리기 가능
+        view.layer.cornerRadius = 16
+        view.layer.masksToBounds = true
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowOpacity = 0.1
+        view.layer.shadowRadius = 8
+        view.layer.masksToBounds = false
         return view
+    }()
+
+    private var buttonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 12
+        stackView.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.95)
+        stackView.layer.cornerRadius = 25
+        stackView.layer.shadowColor = UIColor.black.cgColor
+        stackView.layer.shadowOffset = CGSize(width: 0, height: -2)
+        stackView.layer.shadowOpacity = 0.1
+        stackView.layer.shadowRadius = 10
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 15, left: 20, bottom: 15, right: 20)
+        return stackView
     }()
 
     private var clearButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("지우기", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 22
+        button.layer.shadowColor = UIColor.systemRed.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        
+        // 버튼 눌림 효과
+        button.addTarget(nil, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        button.addTarget(nil, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        
         return button
     }()
     
     private var backButton : UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("뒤로", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.backgroundColor = .systemRed
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.backgroundColor = .systemOrange
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 22
+        button.layer.shadowColor = UIColor.systemOrange.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        
+        // 버튼 눌림 효과
+        button.addTarget(nil, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        button.addTarget(nil, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        
         return button
     }()
     
     private var screenshotButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("저장", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 22
+        button.layer.shadowColor = UIColor.systemGreen.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        
+        // 버튼 눌림 효과
+        button.addTarget(nil, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        button.addTarget(nil, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        
         return button
     }()
     
     private var shareButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("공유", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .systemBlue
         button.setTitleColor(.white, for: .normal)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 22
+        button.layer.shadowColor = UIColor.systemBlue.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        
+        // 버튼 눌림 효과
+        button.addTarget(nil, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        button.addTarget(nil, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        
+        return button
+    }()
+    
+    private var toolToggleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("도구", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.backgroundColor = .systemPurple
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 22
+        button.layer.shadowColor = UIColor.systemPurple.cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 2)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowRadius = 4
+        
+        // 버튼 눌림 효과
+        button.addTarget(nil, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        button.addTarget(nil, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        
         return button
     }()
     
@@ -71,52 +152,65 @@ class DrawingViewController: UIViewController {
         bindActions()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // 뷰가 나타날 때 툴피커를 캔버스뷰와 연결
+        toolPicker.setVisible(true, forFirstResponder: canvasView)
+        toolPicker.addObserver(canvasView)
+        canvasView.becomeFirstResponder()
+        toolPicker.overrideUserInterfaceStyle = .light
+        canvasView.tool = PKInkingTool(.pen, color: .black, width: 3)
+    }
+    
     
     //MARK: setup함수
     private func setupViews() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGray6
     
         view.addSubview(canvasView)
-        view.addSubview(clearButton)
-        view.addSubview(backButton)
-        view.addSubview(screenshotButton)
-        view.addSubview(shareButton)
+        view.addSubview(buttonStackView)
+        
+        buttonStackView.addArrangedSubview(clearButton)
+        buttonStackView.addArrangedSubview(backButton)
+        buttonStackView.addArrangedSubview(screenshotButton)
+        buttonStackView.addArrangedSubview(shareButton)
     }
     
     private func setupConstraints() {
         canvasView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(clearButton.snp.top).offset(-20)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.height.equalTo(500)
         }
         
-        clearButton.snp.makeConstraints { make in
-            make.trailing.equalTo(view.snp.centerX).offset(-50)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
-            make.width.equalTo(100)
-            make.height.equalTo(44)
+        buttonStackView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.top.equalTo(canvasView.snp.bottom).offset(20)
+            make.height.equalTo(74)
         }
         
-        backButton.snp.makeConstraints{ make in
-            make.leading.equalTo(view.snp.centerX).offset(50)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
-            make.width.equalTo(100)
-            make.height.equalTo(44)
+        // 각 버튼의 높이 설정
+        [clearButton, backButton, screenshotButton, shareButton].forEach { button in
+            button.snp.makeConstraints { make in
+                make.height.equalTo(44)
+            }
         }
-        
-        screenshotButton.snp.makeConstraints{ make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
-            make.width.equalTo(80)
-            make.height.equalTo(44)
+    }
+    
+    //MARK: 버튼 애니메이션 효과
+    @objc private func buttonTouchDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.1) {
+            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         }
-        
-        shareButton.snp.makeConstraints { make in
-              make.leading.equalTo(screenshotButton.snp.trailing).offset(15)
-              make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-100)
-              make.width.equalTo(70)
-              make.height.equalTo(44)
-          }
+    }
+    
+    @objc private func buttonTouchUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.1) {
+            sender.transform = CGAffineTransform.identity
+        }
     }
     
     //MARK: 바인딩
@@ -142,6 +236,7 @@ class DrawingViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+    
     
     //MARK: 이벤트 함수
     private func saveCanvasScreenshot() {
@@ -203,7 +298,7 @@ class DrawingViewController: UIViewController {
         // 공유 화면 표시
         present(activityViewController, animated: true)
     }
-
+    
 }
 
 
@@ -211,4 +306,3 @@ class DrawingViewController: UIViewController {
 #Preview{
     DrawingViewController()
 }
-
