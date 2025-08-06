@@ -12,24 +12,26 @@ import SnapKit
 
 class SplashViewController : UIViewController{
     
-    private let label : UILabel = {
-        let label = UILabel()
-        label.text = "Posture"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = .label
-        label.textAlignment = .center
-        return label
+    private let logoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        
+        // 붓 아이콘
+        let config = UIImage.SymbolConfiguration(pointSize: 100, weight: .light)
+        imageView.image = UIImage(systemName: "paintbrush.fill", withConfiguration: config)
+        imageView.tintColor = .systemBlue
+        return imageView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        view.addSubview(label)
-        label.snp.makeConstraints{make in
+        view.addSubview(logoImageView)
+        logoImageView.snp.makeConstraints{make in
             make.center.equalToSuperview()
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.navigateToNextScreen()
         }
     }

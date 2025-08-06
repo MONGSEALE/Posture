@@ -344,7 +344,7 @@ class DrawingViewController: UIViewController {
         }
         
         // 공유할 아이템들
-        let activityItems: [Any] = [image, "내가 그린 그림을 공유합니다!"]
+        let activityItems: [Any] = [image]
         
         // UIActivityViewController 생성
         let activityViewController = UIActivityViewController(

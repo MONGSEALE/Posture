@@ -19,7 +19,7 @@ class FirstIntroductionViewController: UIViewController {
         view.layer.cornerRadius = 60
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 10)
-        view.layer.shadowOpacity = 0.3
+        view.layer.shadowOpacity = 0.2
         view.layer.shadowRadius = 20
         
         // 블러 효과
