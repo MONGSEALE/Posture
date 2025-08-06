@@ -3,12 +3,12 @@ import SnapKit
 import RxCocoa
 import RxSwift
 import PencilKit
+import Photos
 
 
 class DrawingViewController: UIViewController {
     
     //MARK: 컴포넌트
-    
     private let disposeBag = DisposeBag()
     
     private var toolPicker: PKToolPicker = {
@@ -50,7 +50,7 @@ class DrawingViewController: UIViewController {
 
     private var clearButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("지우기", for: .normal)
+        button.setTitle("삭제", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
@@ -69,7 +69,7 @@ class DrawingViewController: UIViewController {
     
     private var backButton : UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("뒤로", for: .normal)
+        button.setTitle("지우기", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.backgroundColor = .systemOrange
         button.setTitleColor(.white, for: .normal)
@@ -85,7 +85,7 @@ class DrawingViewController: UIViewController {
         
         return button
     }()
-    
+     
     private var screenshotButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("저장", for: .normal)
@@ -152,6 +152,11 @@ class DrawingViewController: UIViewController {
         bindActions()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        setupGradient()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -165,6 +170,13 @@ class DrawingViewController: UIViewController {
     
     
     //MARK: setup함수
+    private func setupGradient() {
+        view.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
+          let gradient = BackgroundGradient.onboardingGradientLayer(frame: view.bounds)
+          view.layer.insertSublayer(gradient, at: 0)
+    }
+    
+    
     private func setupViews() {
         view.backgroundColor = .systemGray6
     
@@ -227,7 +239,7 @@ class DrawingViewController: UIViewController {
             .disposed(by: disposeBag)
         screenshotButton.rx.tap
             .subscribe(onNext: {[weak self] in
-                self?.saveCanvasScreenshot()
+                self?.checkPhotoLibraryPermissionAndSave()
             })
             .disposed(by: disposeBag)
         shareButton.rx.tap
@@ -239,6 +251,39 @@ class DrawingViewController: UIViewController {
     
     
     //MARK: 이벤트 함수
+    
+    private func checkPhotoLibraryPermissionAndSave() {
+          let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+          
+          switch status {
+          case .authorized, .limited:
+              print("1")
+              // 권한이 있는 경우 바로 저장
+              saveCanvasScreenshot()
+          case .denied, .restricted:
+              print("2")
+              // 권한이 거부된 경우 설정으로 이동하도록 안내
+              showPermissionDeniedAlert()
+          case .notDetermined:
+              print("3")
+              // 권한을 아직 요청하지 않은 경우 권한 요청
+              PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] newStatus in
+                  DispatchQueue.main.async {
+                      switch newStatus {
+                      case .authorized, .limited:
+                          self?.saveCanvasScreenshot()
+                      case .denied, .restricted:
+                          self?.showPermissionDeniedAlert()
+                      default:
+                          break
+                      }
+                  }
+              }
+          @unknown default:
+              break
+          }
+      }
+    
     private func saveCanvasScreenshot() {
         // 캔버스 뷰만 이미지로 변환
         let renderer = UIGraphicsImageRenderer(bounds: canvasView.bounds)
@@ -253,6 +298,24 @@ class DrawingViewController: UIViewController {
         
         // 사진 앱에 저장
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    private func showPermissionDeniedAlert() {
+        let alert = UIAlertController(
+            title: "사진 접근 권한 필요",
+            message: "그림을 저장하려면 사진 라이브러리 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
+            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsUrl)
+            }
+        })
+        
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        
+        present(alert, animated: true)
     }
     
     @objc private func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {

@@ -170,20 +170,13 @@ class IntroductionViewController : UIViewController{
     
     private func handleStartButtonTapped() {
         print("시작하기 버튼이 탭되었습니다")
-        AVCaptureDevice.requestAccess(for: .video){ granted in
-            DispatchQueue.main.async{
-                if granted {
-                    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-                    try? context.save()
-
-                }
-                else{
-                    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-                    try? context.save()
-
-                }
-            }
-        }
+        
+        // 온보딩 완료 표시
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        
+        let VC = DrawingViewController()
+        VC.modalPresentationStyle = .fullScreen
+        self.present(VC, animated: false)
     }
     
 }
