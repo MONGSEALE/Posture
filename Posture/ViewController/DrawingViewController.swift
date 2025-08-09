@@ -284,28 +284,9 @@ class DrawingViewController: UIViewController {
           }
       }
     
-//    private func saveCanvasScreenshot() {
-//        // 캔버스 뷰만 이미지로 변환
-//        let renderer = UIGraphicsImageRenderer(bounds: canvasView.bounds)
-//        let image = renderer.image { context in
-//            // 흰색 배경 먼저 그리기
-//            UIColor.white.setFill()
-//            context.fill(canvasView.bounds)
-//            
-//            // 캔버스의 그림 그리기
-//            canvasView.layer.render(in: context.cgContext)
-//        }
-//        
-//        // 사진 앱에 저장
-//        UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
-//    }
-    
     private func saveCanvasScreenshot() {
-        let drawing = canvasView.drawing
-        let bounds = drawing.bounds
-        let scale = UIScreen.main.scale
-
-        let image = drawing.image(from: bounds, scale: scale)
+      
+        let image = canvasView.drawing.image(from: canvasView.bounds, scale: UIScreen.main.scale)
 
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
     }
@@ -342,43 +323,9 @@ class DrawingViewController: UIViewController {
         present(alert, animated: true)
     }
     
-//    private func shareCanvasImage() {
-//        // 캔버스 뷰만 이미지로 변환
-//        let renderer = UIGraphicsImageRenderer(bounds: canvasView.bounds)
-//        let image = renderer.image { context in
-//            // 흰색 배경 먼저 그리기
-//            UIColor.white.setFill()
-//            context.fill(canvasView.bounds)
-//            
-//            // 캔버스의 그림 그리기
-//            canvasView.layer.render(in: context.cgContext)
-//        }
-//        
-//        // 공유할 아이템들
-//        let activityItems: [Any] = [image]
-//        
-//        // UIActivityViewController 생성
-//        let activityViewController = UIActivityViewController(
-//            activityItems: activityItems,
-//            applicationActivities: nil
-//        )
-//        
-//        // iPad에서 팝오버 설정 (iPhone에서는 무시됨)
-//        if let popover = activityViewController.popoverPresentationController {
-//            popover.sourceView = shareButton
-//            popover.sourceRect = shareButton.bounds
-//        }
-//        
-//        // 공유 화면 표시
-//        present(activityViewController, animated: true)
-//    }
-    
     private func shareCanvasImage() {
-        let drawing = canvasView.drawing
-        let bounds = drawing.bounds
-        let scale = UIScreen.main.scale
-
-        let image = drawing.image(from: bounds, scale: scale)
+    
+        let image = canvasView.drawing.image(from: canvasView.bounds, scale: UIScreen.main.scale)
 
         let activityItems: [Any] = [image]
         let activityViewController = UIActivityViewController(
