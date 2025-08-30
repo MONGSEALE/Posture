@@ -41,19 +41,45 @@ class SplashViewController : UIViewController{
         let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
         
         if hasCompletedOnboarding {
-            // 기존 사용자 → 바로 그리기 화면
-            let VC = DrawingViewController()
-            VC.modalPresentationStyle = .fullScreen
-            self.present(VC, animated: false)
+            
+            if UIDevice.current.isiPhone {
+                let VC = DrawingViewController_iPhone()
+                VC.modalPresentationStyle = .fullScreen
+                self.present(VC, animated: false)
+            }
+            else{
+                let VC = DrawingViewController_iPad()
+                VC.modalPresentationStyle = .fullScreen
+                self.present(VC, animated: false)
+            }
+            
+           
         } else {
-            // 신규 사용자 → 온보딩 화면
-            let VC = IntroductionViewController()
-            VC.modalPresentationStyle = .fullScreen
-            self.present(VC, animated: false)
+           
+            if UIDevice.current.isiPhone {
+                let VC = IntroductionViewController_iPhone()
+                VC.modalPresentationStyle = .fullScreen
+                self.present(VC, animated: false)
+            }
+            else{
+                let VC = IntroductionViewController_iPad()
+                VC.modalPresentationStyle = .fullScreen
+                self.present(VC, animated: false)
+            }
         }
     }
 }
 
 #Preview{
     SplashViewController()
+}
+
+extension UIDevice {
+    var isiPad: Bool {
+        return userInterfaceIdiom == .pad
+    }
+    
+    var isiPhone: Bool {
+        return userInterfaceIdiom == .phone
+    }
 }

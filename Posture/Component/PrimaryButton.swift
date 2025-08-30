@@ -10,21 +10,21 @@ import UIKit
 
 class PrimaryButton : UIButton {
     
-    init(title:String,isHidden:Bool){
+    init(title:String,isHidden:Bool,isiphone : Bool){
         super.init(frame: .zero)
-        configure(title: title,isHidden: isHidden )
+        configure(title: title,isHidden: isHidden, isiphone: isiphone )
     }
     
     required init?(coder:NSCoder){
         super.init(coder: coder)
-        configure(title: "",isHidden: false)
+        configure(title: "",isHidden: false,isiphone: true)
     }
     
-    private func configure(title: String ,isHidden: Bool){
+    private func configure(title: String ,isHidden: Bool,isiphone : Bool){
         setTitle(title,for: .normal)
         setTitleColor(.white, for: .normal)
         self.backgroundColor = .systemBlue
-        titleLabel?.font = .systemFont(ofSize: 18,weight: .semibold)
+        titleLabel?.font = .systemFont(ofSize: isiphone ? 18 : 36,weight: .semibold)
         layer.cornerRadius = 12
         layer.shadowColor = UIColor.systemBlue.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 4)

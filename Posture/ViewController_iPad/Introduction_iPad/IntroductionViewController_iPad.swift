@@ -14,7 +14,7 @@ import AVFoundation
 import CoreData
 
 
-class IntroductionViewController : UIViewController{
+class IntroductionViewController_iPad : UIViewController{
     
     // MARK: 컴포넌트
     
@@ -36,14 +36,14 @@ class IntroductionViewController : UIViewController{
         return control
     }()
     
-    private lazy var nextButton = PrimaryButton(title: "다음",isHidden: false)
+    private lazy var nextButton = PrimaryButton(title: "다음",isHidden: false, isiphone: false)
     
     private var currentPageIndex = 0
     
     private lazy var introductionPages : [UIViewController] = [
-        FirstIntroductionViewController(),
-        SecondIntroductionViewController(),
-        ThirdIntroductionViewController()
+        FirstIntroductionViewController_iPad(),
+        SecondIntroductionViewController_iPad(),
+        ThirdIntroductionViewController_iPad()
         
     ]
     
@@ -88,9 +88,9 @@ class IntroductionViewController : UIViewController{
         }
         
         nextButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(32)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(0)
-            make.height.equalTo(52)
+            make.leading.trailing.equalToSuperview().inset(48)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.height.equalTo(108)
         }
     }
     
@@ -174,7 +174,7 @@ class IntroductionViewController : UIViewController{
         // 온보딩 완료 표시
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
         
-        let VC = DrawingViewController()
+        let VC = DrawingViewController_iPad()
         VC.modalPresentationStyle = .fullScreen
         self.present(VC, animated: false)
     }
@@ -182,12 +182,12 @@ class IntroductionViewController : UIViewController{
 }
 
 #Preview{
-    IntroductionViewController()
+    IntroductionViewController_iPad()
 }
 
 
 // MARK: - UIPageViewControllerDataSource
-extension IntroductionViewController: UIPageViewControllerDataSource {
+extension IntroductionViewController_iPad: UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = introductionPages.firstIndex(of: viewController) else { return nil }
@@ -207,7 +207,7 @@ extension IntroductionViewController: UIPageViewControllerDataSource {
 }
 
 // MARK: - UIPageViewControllerDelegate
-extension IntroductionViewController: UIPageViewControllerDelegate {
+extension IntroductionViewController_iPad: UIPageViewControllerDelegate {
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
@@ -218,6 +218,7 @@ extension IntroductionViewController: UIPageViewControllerDelegate {
         updateCurrentPage(currentIndex)
     }
 }
+
 
 
 

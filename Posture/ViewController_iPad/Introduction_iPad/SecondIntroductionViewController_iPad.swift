@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class SecondIntroductionViewController: UIViewController {
+class SecondIntroductionViewController_iPad: UIViewController {
     
    
     private let scrollView = UIScrollView()
@@ -23,7 +23,7 @@ class SecondIntroductionViewController: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "자유로운 캔버스"
-        label.font = UIFont.systemFont(ofSize: 36, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 72, weight: .bold)  // iPad에 맞게 폰트 크기 증가
         label.textColor = .black
         label.textAlignment = .center
         
@@ -40,7 +40,7 @@ class SecondIntroductionViewController: UIViewController {
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "상상력을 마음껏 펼쳐보세요"
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 40, weight: .medium)  // iPad에 맞게 폰트 크기 증가
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -59,11 +59,11 @@ class SecondIntroductionViewController: UIViewController {
     private let imageContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
-        view.layer.cornerRadius = 20
+        view.layer.cornerRadius = 28  // iPad에 맞게 모서리 둥글기 증가
         view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOffset = CGSize(width: 0, height: 8)
-        view.layer.shadowOpacity = 0.1
-        view.layer.shadowRadius = 20
+        view.layer.shadowOffset = CGSize(width: 0, height: 12)  // iPad에 맞게 그림자 증가
+        view.layer.shadowOpacity = 0.15  // 그림자 투명도 약간 증가
+        view.layer.shadowRadius = 24  // 그림자 반경 증가
         return view
     }()
     
@@ -73,7 +73,7 @@ class SecondIntroductionViewController: UIViewController {
         imageView.image = UIImage(named: "IntroductionImage")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 20
+        imageView.layer.cornerRadius = 28  // iPad에 맞게 모서리 둥글기 증가
         return imageView
     }()
     
@@ -81,7 +81,7 @@ class SecondIntroductionViewController: UIViewController {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text =  "붓, 펜슬, 색연필 등 다양한 도구로\n나만의 예술 작품을 만들어보세요"
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 40, weight: .medium)  // iPad에 맞게 폰트 크기 증가
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -102,7 +102,7 @@ class SecondIntroductionViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
-        stackView.spacing = 20
+        stackView.spacing = 30  // iPad에 맞게 간격 증가
         return stackView
     }()
     
@@ -137,24 +137,26 @@ class SecondIntroductionViewController: UIViewController {
             make.edges.equalToSuperview()
         }
         containerView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.edges.equalTo(scrollView)
+            make.width.equalTo(scrollView)  // 스크롤뷰와 동일한 너비
+            make.height.greaterThanOrEqualTo(scrollView)  // 최소한 스크롤뷰 높이
         }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(40)
-            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(80)  // iPad에 맞게 상단 여백 증가
+            make.leading.trailing.equalToSuperview().inset(40)  // 좌우 여백 추가
         }
         
         subtitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.centerX.equalToSuperview()
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)  // iPad에 맞게 간격 증가
+            make.leading.trailing.equalToSuperview().inset(40)  // 좌우 여백 추가
         }
         
         imageContainerView.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(40)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(60)  // iPad에 맞게 간격 증가
             make.centerX.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.8)
-            make.height.equalTo(imageContainerView.snp.width).multipliedBy(1.1)
+            make.leading.trailing.equalToSuperview().inset(200)  // iPad에 맞게 좌우 여백 증가
+            make.height.equalTo(imageContainerView.snp.width).multipliedBy(0.9)  // 이미지 비율 조정
         }
         
         introductionImageView.snp.makeConstraints { make in
@@ -162,34 +164,33 @@ class SecondIntroductionViewController: UIViewController {
         }
         
         descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageContainerView.snp.bottom).offset(30)
-            make.leading.trailing.equalToSuperview().inset(40)
-            make.centerX.equalToSuperview()
+            make.top.equalTo(imageContainerView.snp.bottom).offset(50)  // iPad에 맞게 간격 증가
+            make.leading.trailing.equalToSuperview().inset(60)  // iPad에 맞게 좌우 여백 증가
         }
         
         featuresStackView.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(40)
-            make.leading.trailing.equalToSuperview().inset(60)
-            make.centerX.equalToSuperview()
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(60)  // iPad에 맞게 간격 증가
+            make.leading.trailing.equalToSuperview().inset(80)  // iPad에 맞게 좌우 여백 증가
+            make.bottom.equalToSuperview().offset(-60)  // 하단 여백 추가
         }
     }
     
     private func setupAnimations() {
-        // 초기 상태 설정
+        // 초기 상태 설정 - iPad에 맞게 애니메이션 거리 증가
         titleLabel.alpha = 0
-        titleLabel.transform = CGAffineTransform(translationX: 0, y: -20)
+        titleLabel.transform = CGAffineTransform(translationX: 0, y: -30)
         
         subtitleLabel.alpha = 0
-        subtitleLabel.transform = CGAffineTransform(translationX: 0, y: -20)
+        subtitleLabel.transform = CGAffineTransform(translationX: 0, y: -30)
         
         imageContainerView.alpha = 0
-        imageContainerView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        imageContainerView.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)  // 스케일 약간 더 작게 시작
         
         descriptionLabel.alpha = 0
-        descriptionLabel.transform = CGAffineTransform(translationX: 0, y: 20)
+        descriptionLabel.transform = CGAffineTransform(translationX: 0, y: 30)
         
         featuresStackView.alpha = 0
-        featuresStackView.transform = CGAffineTransform(translationX: 0, y: 20)
+        featuresStackView.transform = CGAffineTransform(translationX: 0, y: 30)
         
         // 순차적 애니메이션
         UIView.animate(withDuration: 0.8, delay: 0.2, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: [.curveEaseOut]) {
@@ -220,5 +221,5 @@ class SecondIntroductionViewController: UIViewController {
 }
 
 #Preview {
-    SecondIntroductionViewController()
+    SecondIntroductionViewController_iPad()
 }

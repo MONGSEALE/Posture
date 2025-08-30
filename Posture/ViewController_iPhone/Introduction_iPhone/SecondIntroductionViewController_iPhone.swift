@@ -1,15 +1,16 @@
 //
-//  ThirdIntroductionViewController.swift
+//  SecondIntroductionViewController.swift
 //  Posture
 //
-//  Created by DongHyeokHwang on 8/6/25.
+//  Created by DongHyeokHwang on 7/25/25.
 //
 
 import UIKit
 import SnapKit
 
-class ThirdIntroductionViewController: UIViewController {
+class SecondIntroductionViewController_iPhone: UIViewController {
     
+   
     private let scrollView = UIScrollView()
     
     private let containerView: UIView = {
@@ -18,9 +19,10 @@ class ThirdIntroductionViewController: UIViewController {
         return view
     }()
     
+  
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "간단한 공유"
+        label.text = "자유로운 캔버스"
         label.font = UIFont.systemFont(ofSize: 36, weight: .bold)
         label.textColor = .black
         label.textAlignment = .center
@@ -34,9 +36,10 @@ class ThirdIntroductionViewController: UIViewController {
         return label
     }()
     
+    
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "작품을 친구들과 나누어보세요"
+        label.text = "상상력을 마음껏 펼쳐보세요"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.textAlignment = .center
@@ -67,7 +70,7 @@ class ThirdIntroductionViewController: UIViewController {
     // UIImageView 프로퍼티
     private let introductionImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "IntroductionImage2")
+        imageView.image = UIImage(named: "IntroductionImage")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 20
@@ -77,7 +80,7 @@ class ThirdIntroductionViewController: UIViewController {
     // 설명 라벨
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "완성된 캔버스 작품을 소셜미디어나\n메시지로 쉽게 공유할 수 있어요"
+        label.text =  "붓, 펜슬, 색연필 등 다양한 도구로\n나만의 예술 작품을 만들어보세요"
         label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.textAlignment = .center
@@ -92,6 +95,7 @@ class ThirdIntroductionViewController: UIViewController {
         
         return label
     }()
+    
     
     // 특징 스택뷰
     private let featuresStackView: UIStackView = {
@@ -150,7 +154,7 @@ class ThirdIntroductionViewController: UIViewController {
             make.top.equalTo(subtitleLabel.snp.bottom).offset(40)
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.8)
-            make.height.equalTo(imageContainerView.snp.width).multipliedBy(1.3)
+            make.height.equalTo(imageContainerView.snp.width).multipliedBy(1.1)
         }
         
         introductionImageView.snp.makeConstraints { make in
@@ -216,5 +220,5 @@ class ThirdIntroductionViewController: UIViewController {
 }
 
 #Preview {
-    ThirdIntroductionViewController()
+    SecondIntroductionViewController_iPhone()
 }

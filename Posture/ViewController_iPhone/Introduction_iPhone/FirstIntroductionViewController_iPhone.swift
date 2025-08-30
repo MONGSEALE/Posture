@@ -3,7 +3,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class FirstIntroductionViewController: UIViewController {
+class FirstIntroductionViewController_iPhone: UIViewController {
     
     private let disposeBag = DisposeBag()
     
@@ -289,5 +289,5 @@ class FirstIntroductionViewController: UIViewController {
 }
 
 #Preview{
-    FirstIntroductionViewController()
+    FirstIntroductionViewController_iPhone()
 }

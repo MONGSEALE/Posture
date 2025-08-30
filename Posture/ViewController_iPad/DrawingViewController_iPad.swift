@@ -6,7 +6,7 @@ import PencilKit
 import Photos
 
 
-class DrawingViewController: UIViewController {
+class DrawingViewController_iPad: UIViewController {
     
     //MARK: 컴포넌트
     private let disposeBag = DisposeBag()
@@ -51,7 +51,7 @@ class DrawingViewController: UIViewController {
     private var clearButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("삭제", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
         button.backgroundColor = .systemRed
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 22
@@ -70,7 +70,7 @@ class DrawingViewController: UIViewController {
     private var backButton : UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("지우기", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
         button.backgroundColor = .systemOrange
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 22
@@ -89,7 +89,7 @@ class DrawingViewController: UIViewController {
     private var screenshotButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("저장", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 22
@@ -108,7 +108,7 @@ class DrawingViewController: UIViewController {
     private var shareButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("공유", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
         button.backgroundColor = .systemBlue
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 22
@@ -159,13 +159,17 @@ class DrawingViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        // 뷰가 나타날 때 툴피커를 캔버스뷰와 연결
         toolPicker.setVisible(true, forFirstResponder: canvasView)
+      
         toolPicker.addObserver(canvasView)
-        canvasView.becomeFirstResponder()
+     
         toolPicker.overrideUserInterfaceStyle = .light
+        canvasView.becomeFirstResponder()
         canvasView.tool = PKInkingTool(.pen, color: .black, width: 3)
+     
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+//               self?.canvasView.becomeFirstResponder()
+//           }
     }
     
     
@@ -191,23 +195,24 @@ class DrawingViewController: UIViewController {
     
     private func setupConstraints() {
         canvasView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.height.equalTo(500)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(40)  // iPad에 맞게 상단 여백 증가
+                    make.leading.equalToSuperview().offset(40)  // iPad에 맞게 좌우 여백 증가
+                    make.trailing.equalToSuperview().offset(-40)
+                    // iPad 세로 화면에 맞게 캔버스 높이를 적절히 조정 - 화면의 약 60% 정도 사용
+                    make.height.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.6)
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.leading.equalToSuperview().offset(40)
+            make.trailing.equalToSuperview().offset(-40)
             make.top.equalTo(canvasView.snp.bottom).offset(20)
-            make.height.equalTo(74)
+            make.height.equalTo(108)
         }
         
         // 각 버튼의 높이 설정
         [clearButton, backButton, screenshotButton, shareButton].forEach { button in
             button.snp.makeConstraints { make in
-                make.height.equalTo(44)
+            //    make.height.equalTo(44)
             }
         }
     }
@@ -324,20 +329,21 @@ class DrawingViewController: UIViewController {
     }
     
     private func shareCanvasImage() {
-    
+        // 현재 canvasView에 그려진 내용을 UIImage로 변환
         let image = canvasView.drawing.image(from: canvasView.bounds, scale: UIScreen.main.scale)
-
+        // 공유할 아이템 배열 생성 (공유 메시지를 제외하고 이미지 하나만 포함)
         let activityItems: [Any] = [image]
+        //  에어드랍, 메시지, 메일등 시스템 제공 액션 선택 가능
         let activityViewController = UIActivityViewController(
             activityItems: activityItems,
             applicationActivities: nil
         )
-
+        // 아이패드 환경에서 공유 시트가 팝오버 형태로 뜨도록 anchor 설정
         if let popover = activityViewController.popoverPresentationController {
             popover.sourceView = shareButton
             popover.sourceRect = shareButton.bounds
         }
-
+        // 공유 시트를 현재 뷰 컨트롤러에서 표시
         present(activityViewController, animated: true)
     }
 
@@ -347,5 +353,6 @@ class DrawingViewController: UIViewController {
 
 
 #Preview{
-    DrawingViewController()
+    DrawingViewController_iPad()
 }
+
