@@ -155,8 +155,8 @@ class SecondIntroductionViewController_iPad: UIViewController {
         imageContainerView.snp.makeConstraints { make in
             make.top.equalTo(subtitleLabel.snp.bottom).offset(60)  // iPad에 맞게 간격 증가
             make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(200)  // iPad에 맞게 좌우 여백 증가
-            make.height.equalTo(imageContainerView.snp.width).multipliedBy(0.9)  // 이미지 비율 조정
+            make.leading.trailing.equalToSuperview().inset(280)  // iPad에 맞게 좌우 여백 증가
+            make.height.equalTo(imageContainerView.snp.width).multipliedBy(1.3)  // 이미지 비율 조정
         }
         
         introductionImageView.snp.makeConstraints { make in
